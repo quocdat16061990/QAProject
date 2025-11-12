@@ -1,8 +1,10 @@
 import streamlit as st
 import requests
 import uuid
-
+import json
+# abc
 # Hàm đọc nội dung từ file văn bản
+#xyz
 def rfile(name_file):
     try:
         with open(name_file, "r", encoding="utf-8") as file:
@@ -31,9 +33,9 @@ def send_message_to_llm(session_id, message):
         response.raise_for_status()
         response_data = response.json()
         print('Response hỏi đáp:', response_data)
-        # Trích xuất contract
-        contract = response_data[0].get('output', "No output")
-        
+        # Trích xuất contract — xử lý các trường 'output' và 'text'
+        contract = response_data.get('output', "No output")
+        print('Contract nhận được:', contract)
         # Trả về object theo định dạng N8nOutputItems
         return [{"json": {"contract": contract}}]
     
