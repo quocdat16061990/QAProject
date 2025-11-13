@@ -12,6 +12,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 🔍 BƯỚC 1: Debug thông tin trước khi SSH
+      - name: Preflight debug SSH config
+        run: |
+          echo "🔍 Preflight check before SSH..."
+
+          echo "👉 Host from secrets: ${{ secrets.VPS_HOST }}"
+          echo "👉 Username from secrets: ${{ secrets.VPS_USER }}"
+
+          if [ -z "${{ secrets.VPS_SSH_KEY }}" ]; then
+            echo "❌ VPS_SSH_KEY is EMPTY. Check your repository secrets!"
+            exit 1
+          else
+            echo "✅ VPS_SSH_KEY is set (nội dung sẽ được GitHub tự mask)."
+            echo "🔢 Approx key length (chars): $(echo "${{ secrets.VPS_SSH_KEY }}" | wc -c)"
+          fi
+
+          echo "✅ Preflight done. If you thấy host/username đúng, mình qua bước SSH."
+        shell: bash
+
+      # 🚀 BƯỚC 2: SSH và deploy
       - name: Deploy ORC to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -21,12 +41,30 @@ jobs:
           port: 22
           timeout: 30s
           command_timeout: 15m
+          debug: true          # Bật debug của ssh-action
+          script_stop: true    # Nếu script fail thì dừng luôn
           script: |
             set -euo pipefail
             echo "🚀 Deploying ORC app to VPS..."
             cd ~/QAProject
-            # đảm bảo luôn chạy được
-            chmod +x ./deployQA.sh || true
+
+            echo "::group::📁 Check QAProject folder"
+            pwd
+            ls -la
+            echo "::endgroup::"
+
+            echo "::group::📜 Check deployQA.sh"
+            if [ ! -f "./deployQA.sh" ]; then
+              echo "❌ Không tìm thấy file deployQA.sh trong ~/QAProject"
+              exit 1
+            fi
+            ls -la ./deployQA.sh
+            chmod +x ./deployQA.sh || { echo "❌ chmod failed"; exit 1; }
             dos2unix ./deployQA.sh 2>/dev/null || true
-            bash -lc "./deployQA.sh"
-            echo "✅ Deployment completed successfully!"l
+            echo "::endgroup::"
+
+            echo "::group::🚀 Run deployQA.sh with bash -x"
+            bash -x ./deployQA.sh
+            echo "::endgroup::"
+
+            echo "✅ Deployment completed successfully!"
