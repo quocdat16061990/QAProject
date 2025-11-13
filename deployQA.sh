@@ -10,11 +10,12 @@ log() {
 
 log "==============================================="
 log "🚀 Bắt đầu deployment..."
-
-# Pull code mới nhất
 log "📥 Pulling latest code from GitHub..."
+
 cd ~/QAProject
-git pull origin main 2>&1 | tee -a $LOG_FILE
+
+git fetch --all -p        2>&1 | tee -a "$LOG_FILE"
+git reset --hard origin/main 2>&1 | tee -a "$LOG_FILE"
 
 # Các bước deploy của bạn
 log "🔧 Running deployment steps..."
