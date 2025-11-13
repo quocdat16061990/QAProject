@@ -24,5 +24,8 @@ jobs:
           script: |
             echo "🚀 Deploying ORC app to VPS..."
             cd ~/QAProject
-            ./deployQA.sh
+            # đảm bảo luôn chạy được
+            chmod +x ./deployQA.sh || true
+            dos2unix ./deployQA.sh 2>/dev/null || true
+             bash -lc "./deployQA.sh"
             echo "✅ Deployment completed successfully!"l
