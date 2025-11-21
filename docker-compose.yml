@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  qa-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT:-8502}:8502"
+    environment:
+      PORT: 8502
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.qanda.rule=Host(`questionandanswer.shopabcquocdat.xyz`)
+      - traefik.http.routers.qanda.entrypoints=web,websecure
+      - traefik.http.routers.qanda.tls=true
+      - traefik.http.routers.qanda.tls.certresolver=mytlschallenge
+      - traefik.http.services.qanda.loadbalancer.server.port=8502
+    restart: unless-stopped
+
+    networks:
+      - root_default
+
+networks:
+  root_default:
+    external: true  

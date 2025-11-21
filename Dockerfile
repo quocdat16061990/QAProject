@@ -15,4 +15,4 @@ COPY . /app
 EXPOSE 8502
 
 # 6. Lệnh chạy Streamlit
-CMD ["streamlit", "run", "app.py", "--server.port=8502", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "n8n-streamlit-agent-basic-auth.py", "--server.port=8502", "--server.address=0.0.0.0"]
