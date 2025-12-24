@@ -158,7 +158,7 @@ def call_n8n_webhook(prompt: str, n8n_url: str, additional_params: dict = None) 
         response = requests.post(
             n8n_url,
             json=payload,
-            timeout=900  # Timeout 15 phút (900 giây) để xử lý video dài
+            timeout=2900  # Timeout 15 phút (900 giây) để xử lý video dài
         )
         elapsed_time = time.time() - start_time
         elapsed_minutes = int(elapsed_time // 60)
